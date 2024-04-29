@@ -26,6 +26,11 @@ jobs:
         run: |
           find addons -name ".git" -type d -exec rm -rf {} +
 
+      # Copies the licence, readme, etc to the root directory of the repo
+      - name: Copy markdown files
+        run: |
+          find addons -name "*.md" -type f -exec cp {} . \;
+
       # You MUST give the github actions write access to your repo or this will always fail!
       # -> This setting is in in Settings->Actions->General, at the bottom of the page
       # Note: This step may fail if the target repo has no changes since the last run (which is ok)
