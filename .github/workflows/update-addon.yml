@@ -1,0 +1,38 @@
+name: Update Addon
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Run automatically at the end of every day
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Make sure to set the repo and target folder accordingly
+      - name: Clone the addon from external repository
+        run: |
+          rm -rf addons 
+          git clone https://github.com/4d49/object-inspector addons/object_inspector
+
+      # Required to properly push the main repo
+      - name: Strip .git from cloned addon
+        run: |
+          find addons -name ".git" -type d -exec rm -rf {} +
+
+      # You MUST give the github actions write access to your repo or this will always fail!
+      # -> This setting is in in Settings->Actions->General, at the bottom of the page
+      # Note: This step may fail if the target repo has no changes since the last run (which is ok)
+      - name: Commit & push changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Update Addon"
+          git push
